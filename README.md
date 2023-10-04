@@ -2,8 +2,8 @@
 PyPi mirroring without bandersnatch
 
 ```
-docker compose -f docker-compose.yml build consumer webserver nginx
-docker compose -f docker-compose.yml up -d
+docker compose build consumer webserver nginx
+docker compose up -d
 ```
 
 or...
