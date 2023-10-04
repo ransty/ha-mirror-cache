@@ -10,8 +10,6 @@ logging.basicConfig()
 logging.root.setLevel(logging.NOTSET)
 logging.info("Connecting to Redis...")
 
-server_on = False
-
 while True:
     last_id = '$'
     events = conn.xread({"cache": last_id}, block=0, count=10)
@@ -29,8 +27,4 @@ while True:
             subprocess.call(['pypi-mirror', 'download', '-d', '/opt/cache/', '-b', package])
             logging.info("Re-indexing simple")
             subprocess.call(['pypi-mirror', 'create', '-d', '/opt/cache/', '-m', 'simple'], cwd='/opt/')
-            if not server_on:
-                logging.info("Spawning http.server")
-                subprocess.Popen(['python3', '-m', 'http.server'], cwd='/opt/')
-                server_on = True
     last_id = e[0]
