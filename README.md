@@ -1,6 +1,9 @@
 # ha-mirror-cache
 PyPi mirroring without bandersnatch
 
+# Create docker network for isolation
+docker network create ha-mirror-cache
+
 # Start Redis
 docker run -d --name redis --hostname redis --network ha-mirror-cache redis
 
