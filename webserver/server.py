@@ -40,6 +40,7 @@ class S(BaseHTTPRequestHandler):
                     self.wfile.write(json.dumps(INVALID_REQUEST_RESPONSE).encode('utf-8'))
                     return
 
+            version = 'latest'
             for key, data in request.items():
                 if key == "package":
                     package = data
