@@ -6,8 +6,10 @@ import os
 
 import redis
 
+conn = redis.Redis(host='redis', port=6379, db=0)
+pub = conn.pubsub()
 
-stream_key = os.getenv("STREAM_KEY", "cache")
+stream_channel = os.getenv("STREAM_CHANNEL", "cache")
 
 FORBIDDEN_RESPONSE = {"Forbidden": "403"}
 INVALID_REQUEST_RESPONSE = {"Invalid JSON": "JSON does not contain a package name!"}
@@ -47,21 +49,11 @@ class QueuePublisher(BaseHTTPRequestHandler):
                     version = data
 
             logging.info("User requested package %s %s", package, version)
-            self.queue_request(request)
+            conn.publish(stream_channel, json.dumps(request).encode('utf-8'))
 
         response = {"Queued": "OK"}
         self._set_response()
         self.wfile.write(json.dumps(response).encode('utf-8'))
-
-    def queue_request(self, request):
-        """
-        Adds a new package to be mirrored to the queue
-        If version is not provided, latest will be grabbed
-        :param request: The JSON request to pass to the broker
-        """
-        conn = redis.Redis(host='redis', port=6379, db=0)
-        conn.xadd(stream_key, request)
-        return
 
 def run(server_class=HTTPServer, handler_class=QueuePublisher, port=8080):
     logging.basicConfig(level=logging.INFO)

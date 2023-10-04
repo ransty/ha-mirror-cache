@@ -28,7 +28,7 @@ services:
       - /home/keano/play/cache/:/opt/cache/
       - /home/keano/play/simple/:/opt/simple/
     environment:
-      STREAM_KEY: "cache"
+      STREAM_CHANNEL: "cache"
     depends_on:
       - broker
 
@@ -42,7 +42,7 @@ services:
     ports:
       - 8080:80
     environment:
-      STREAM_KEY: "cache"
+      STREAM_CHANNEL: "cache"
 
   nginx:
     image: ransty/nginx:latest
