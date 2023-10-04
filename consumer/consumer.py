@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 import logging
+import os
 import subprocess
 
 import redis
 
+stream_key = os.getenv("STREAM_KEY", "cache")
 conn = redis.Redis(host='redis', port=6379, db=0)
 
 logging.basicConfig()
 logging.root.setLevel(logging.NOTSET)
-logging.info("Connecting to Redis...")
+
+logging.info("Waiting for messages on %s stream", stream_key)
 
 while True:
     last_id = '$'
-    events = conn.xread({"cache": last_id}, block=0, count=10)
+    events = conn.xread({stream_key: last_id}, block=0, count=10)
     for _, e in events:
         request = e[0][1]
         for key, data in request.items():

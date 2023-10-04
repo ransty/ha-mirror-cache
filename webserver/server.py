@@ -2,9 +2,12 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import logging
+import os
 
 import redis
 
+
+stream_key = os.getenv("STREAM_KEY", "cache")
 
 FORBIDDEN_RESPONSE = {"Forbidden": "403"}
 INVALID_REQUEST_RESPONSE = {"Invalid JSON": "JSON does not conform to {'package': 'version'}"}
@@ -57,7 +60,7 @@ class S(BaseHTTPRequestHandler):
         :param request: The JSON request to pass to the broker
         """
         conn = redis.Redis(host='redis', port=6379, db=0)
-        conn.xadd("cache", request)
+        conn.xadd(stream_key, request)
         return
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):

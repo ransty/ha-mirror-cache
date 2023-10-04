@@ -1,0 +1,58 @@
+version: "3"
+
+networks:
+  ha-mirror-cache:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.0.0/16
+          ip_range: 10.10.5.0/24
+          gateway: 10.10.5.1
+
+services:
+  broker:
+    image: redis:latest
+    container_name: redis
+    hostname: redis
+    networks:
+      - ha-mirror-cache
+
+  consumer:
+    image: ransty/consumer:latest
+    container_name: consumer
+    build:
+      context: consumer/
+    networks:
+      - ha-mirror-cache
+    volumes:
+      - /home/keano/play/cache/:/opt/cache/
+      - /home/keano/play/simple/:/opt/simple/
+    environment:
+      STREAM_KEY: "cache"
+    depends_on:
+      - broker
+
+  webserver:
+    image: ransty/webserver:latest
+    container_name: webserver
+    build:
+      context: webserver/
+    networks:
+      - ha-mirror-cache
+    ports:
+      - 8080:80
+    environment:
+      STREAM_KEY: "cache"
+
+  nginx:
+    image: ransty/nginx:latest
+    container_name: nginx
+    build:
+      context: nginx/
+    networks:
+      - ha-mirror-cache
+    volumes:
+      - /home/keano/play/cache/:/usr/share/nginx/html/cache/:ro
+      - /home/keano/play/simple/:/usr/share/nginx/html/simple/:ro
+    ports:
+      - 80:80
