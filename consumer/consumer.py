@@ -18,6 +18,8 @@ while True:
     events = conn.xread({stream_key: last_id}, block=0, count=10)
     for _, e in events:
         request = e[0][1]
+        # Version might not be set!
+        version = None
         for key, data in request.items():
             if key.decode('utf-8') == "package":
                 package = data.decode('utf-8')
