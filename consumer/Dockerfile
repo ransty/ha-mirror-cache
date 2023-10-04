@@ -6,4 +6,4 @@ RUN pip install -U pip && pip install redis python-pypi-mirror \
     && mkdir /opt/cache
 
 ENTRYPOINT ["/usr/local/bin/python3.8"]
-CMD ["/opt/consumer.py"]
+CMD ["-u", "/opt/consumer.py"]

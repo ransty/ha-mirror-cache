@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 import subprocess
 
@@ -5,7 +6,11 @@ import redis
 
 conn = redis.Redis(host='redis', port=6379, db=0)
 
+logging.basicConfig()
+logging.root.setLevel(logging.NOTSET)
 logging.info("Connecting to Redis...")
+
+server_on = False
 
 while True:
     last_id = '$'
@@ -20,8 +25,12 @@ while True:
         if package:
             if version:
                 package = f'{package}=={version}'
+            logging.info("Downloading package %s", package)
             subprocess.call(['pypi-mirror', 'download', '-d', '/opt/cache/', '-b', package])
-            # Re-index simple
+            logging.info("Re-indexing simple")
             subprocess.call(['pypi-mirror', 'create', '-d', '/opt/cache/', '-m', 'simple'], cwd='/opt/')
-            subprocess.call(['python3', '-m', 'http.server'], cwd='/opt/')
+            if not server_on:
+                logging.info("Spawning http.server")
+                subprocess.Popen(['python3', '-m', 'http.server'], cwd='/opt/')
+                server_on = True
     last_id = e[0]
