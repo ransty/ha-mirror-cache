@@ -55,4 +55,5 @@ consumer   | Successfully downloaded pika
 consumer   | INFO:root:Re-indexing simple
 ```
 
-
+## TODO:
+- Make multiple consumer containers with different Python versions installed
