@@ -38,7 +38,7 @@ docker run -d --name nginx -p 80:80 --network ha-mirror-cache -v /path/to/cache:
 ```
 $ curl -i -X POST -H 'Content-Type: application/json' -d '{"package": "pika", "version": "1.0.0"}' localhost:8080
 
-webserver  | INFO:root:Starting httpd...
+webserver  | INFO:root:Starting Queue Publisher...
 webserver  | 
 webserver  | 
 consumer   | INFO:root:Waiting for messages on cache stream
